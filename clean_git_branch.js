@@ -17,7 +17,7 @@ async function clean(pathDir) {
 			let ex = false;
 			for (const exBr of excludeBranches) {
 				if (exBr == branch) {
-					exBr = true;
+					ex = true;
 					break;
 				}
 			}
