@@ -8,6 +8,11 @@ router.router({ clean }).route();
 
 
 async function clean(pathDir) {
+	if (!pathDir) {
+		pathDir = ".";
+	}
+	pathDir = path.resolve(pathDir);
+
 	const excludeBranches = ["dev"];
 	const result = await spawn.spawn("git", ["branch"], { cwd: pathDir, capture: "stdout" });
 	const branches = `${result.stdout}`.split(/\n/);
