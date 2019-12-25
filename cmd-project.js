@@ -17,6 +17,12 @@ async function cleanNodeModules(pathDir) {
 	await spawn.spawn("rm", ["-rf", path.join(projectPath, "node_modules")]);
 	await spawn.spawn("rm", ["-rf", path.join(projectPath, "package-lock.json")]);
 
+	const testUIDir = path.join(projectPath, "test-ui");
+	if (await fs.pathExists(testUIDir)) {
+		await spawn.spawn("rm", ["-rf", path.join(testUIDir, "node_modules")]);
+		await spawn.spawn("rm", ["-rf", path.join(testUIDir, "package-lock.json")]);
+	}
+
 	const servicesPath = path.join(projectPath, "services");
 	const files = await fs.readdir(servicesPath);
 	for (const dir of files) {
@@ -29,6 +35,8 @@ async function cleanNodeModules(pathDir) {
 		fileOrDir = path.join(servicesPath, dir, "dist");
 		await deleteFile(fileOrDir);
 	}
+
+
 }
 
 
@@ -41,6 +49,11 @@ async function updateNpm(pathDir) {
 	const projectPath = pathDir;
 	console.log("updating...");
 	await spawn.spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: projectPath });
+
+	const testUIDir = path.join(projectPath, "test-ui");
+	if (await fs.pathExists(testUIDir)) {
+		await spawn.spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: testUIDir });
+	}
 
 	const servicesPath = path.join(projectPath, "services");
 	const dirs = await fs.readdir(servicesPath);
