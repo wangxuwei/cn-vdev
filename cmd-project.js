@@ -134,14 +134,10 @@ async function recreateDb(pathDir) {
 			await v.psqlImport(dbOpts, [dropFile]);
 		}
 		if (dropFile.endsWith(".ts")) {
-			console.log("++++");
 			// run the ts file
-			console.log(dropFile);
 			const distFileName = dropFile.replace(".ts", ".js");
 			const arg = path.join(distDir, 'src/upgrade', path.basename(distFileName));
-			console.log(arg);
 			const result = await spawn.spawn('kubectl', ['get', 'pods', '-l', 'run=halo-agent', '--no-headers=true', '-o', 'custom-columns=:metadata.name'], { capture: 'stdout' });
-			console.log(result);
 			const podName = result.stdout.replace("\n", "");
 			await spawn.spawn('kubectl', ['exec', '-it', podName, '--', 'node', arg]);
 		}
