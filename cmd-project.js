@@ -87,6 +87,7 @@ async function recreateDb(pathDir) {
 	const dataPath = path.join(pathDir, '~data/');
 	const dropFilesDir = path.join(pathDir, '/services/agent/src/upgrade');
 	const distDir = 'dist/services/agent';
+	const dbScriptsDir = 'src/db_scripts';
 
 	const sqlDir = path.join(pathDir, '/services/agent/sql');
 	const host = 'localhost';
@@ -121,7 +122,11 @@ async function recreateDb(pathDir) {
 	await v.psqlImport(dbOpts, file);
 
 	//// 5) Reset the passwords to welcome (clear)
-	await v.psqlImport(dbOpts, [`${sqlDir}/_reset-passwords.sql`]);
+	const distFileName = path.join(distDir, dbScriptsDir, '_reset-passwords.ts').replace(".ts", ".js");
+	const arg = distFileName;
+	const result = await spawn.spawn('kubectl', ['get', 'pods', '-l', 'run=halo-agent', '--no-headers=true', '-o', 'custom-columns=:metadata.name'], { capture: 'stdout' });
+	const podName = result.stdout.replace("\n", "");
+	await spawn.spawn('kubectl', ['exec', '-it', podName, '--', 'node', arg]);
 
 	//// 6) Import the drop sqls
 
