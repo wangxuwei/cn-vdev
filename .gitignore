@@ -4,3 +4,6 @@
 # ignore node things
 node_modules/
 npm-debug.log
+# prevent all root folders and filenames starting with "~". By convension, they are local folders only
+# used for personal notes, data store, output dir, ...
+~*
