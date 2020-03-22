@@ -2,6 +2,9 @@ import { spawn } from 'p-spawn';
 import { HTTP_BASE_URL, startServer, stopServer } from '../server/main';
 import { getDockerfileContent, getPackageJsonContent, getProjectPath, getServicePaths, hasDockerfile, hasPackageJson, updateDockerFileContent } from './utils-path';
 
+const commentStartTag = "# ms-script";
+const commentEndTag = "# /ms-script";
+
 export async function dbuild(pathDir: string) {
 	const projectPath = await getProjectPath(pathDir);
 
@@ -42,6 +45,23 @@ export async function dbuild(pathDir: string) {
 		await stopServer();
 		console.log("Dockerfile reverted back.");
 		process.exit(0);
+	}
+}
+
+export async function revertDbuild(pathDir: string) {
+	const projectPath = await getProjectPath(pathDir);
+	const servicesPath = await getServicePaths(projectPath);
+	// update
+	for (const servicePath of servicesPath) {
+		if (!(await hasDockerfile(servicePath))) {
+			continue;
+		}
+		let dockerContent = await getDockerfileContent(servicePath);
+
+		// first \s is line start
+		const reg = new RegExp(`\\s${commentStartTag}[\\s\\S]*?${commentEndTag}`, "g");
+		dockerContent = dockerContent.replace(reg, "");
+		await updateDockerFileContent(servicePath, dockerContent);
 	}
 }
 
@@ -112,12 +132,13 @@ async function updateSharpInstallIfNeed(dockerContent: string, packageJson: any)
 
 async function insertAfterImageStep(dockerSteps: string[], steps: string[]) {
 	let fromSetupIndex = 0;
+	const newSteps = [commentStartTag, ...steps, commentEndTag];
 	for (let i = 0; i < dockerSteps.length; i++) {
 		const step = dockerSteps[i];
 		if (step.indexOf("FROM ") > -1) {
 			fromSetupIndex = i;
 		}
 	}
-	dockerSteps.splice(fromSetupIndex + 1, 0, ...steps);
+	dockerSteps.splice(fromSetupIndex + 1, 0, ...newSteps);
 	return dockerSteps;
 }
