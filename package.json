@@ -5,9 +5,15 @@
   "description": "scripts for local",
   "main": "start.js",
   "devDependencies": {
+    "@types/node": "^12.12.29",
+    "@types/koa": "^2.11.2",
+    "@types/koa-static": "^4.0.1",
+    "http-graceful-shutdown": "^2.3.2",
+    "koa": "^2.11.0",
+    "koa-static": "^5.0.0",
+    "koa-body": "^4.1.1",
     "cmdrouter": "^0.3.1",
     "fs-extra-plus": "^0.5.0",
-    "@types/node": "^12.12.29",
     "p-spawn": "^0.4.1",
     "pg": "^7.18.2",
     "uuid": "^7.0.1",
@@ -17,6 +23,8 @@
   },
   "scripts": {
     "project": "./node_modules/.bin/ts-node ./src/cmd-project.ts",
+    "server": "./node_modules/.bin/ts-node ./src/cmd-server.ts",
+    "watch": "tsc -w",
     "build": "tsc"
   },
   "engines": {

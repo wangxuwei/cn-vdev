@@ -1,10 +1,10 @@
-## Steps
 
-###  Requirements
+## Requirements
 
 - node
 - typescrpt 
 
+## Steps
 
 ### Run commands, 
 ```
