@@ -1,27 +1,22 @@
 import { pathExists, readdir, stat } from 'fs-extra-plus';
 import { spawn } from 'p-spawn';
-import { basename, join, resolve } from 'path';
+import { basename } from 'path';
+import { getProjectPath, getServicePaths, getTestUIPath } from './utils-path';
 
 
 export async function updateNpm(pathDir: string) {
-	if (!pathDir) {
-		pathDir = ".";
-	}
-	pathDir = resolve(pathDir);
+	const projectPath = await getProjectPath(pathDir);
 
-	const projectPath = pathDir;
 	console.log("updating...");
 	await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: projectPath });
 
-	const testUIDir = join(projectPath, "test-ui");
+	const testUIDir = await getTestUIPath(projectPath);
 	if (await pathExists(testUIDir)) {
 		await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: testUIDir });
 	}
 
-	const servicesPath = join(projectPath, "services");
-	const dirs = await readdir(servicesPath);
-	for (const dir of dirs) {
-		const serviceDir = join(servicesPath, dir);
+	const servicesPath = await getServicePaths(projectPath);
+	for (const serviceDir of servicesPath) {
 		const st = await stat(serviceDir);
 		if (!st.isDirectory()) {
 			continue;

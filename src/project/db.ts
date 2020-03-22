@@ -1,23 +1,21 @@
 
 import { glob } from 'fs-extra-plus';
 import { spawn } from 'p-spawn';
-import { basename, join, resolve } from 'path';
+import { basename, join } from 'path';
 import { pgTest, psqlImport } from 'vdev';
+import { getProjectPath } from './utils-path';
 
 
 
 export async function recreateDb(pathDir: string) {
-	if (!pathDir) {
-		pathDir = ".";
-	}
-	pathDir = resolve(pathDir);
+	const projectPath = await getProjectPath(pathDir);
 
-	const dataPath = join(pathDir, '~data/');
-	const dropFilesDir = join(pathDir, '/services/agent/src/upgrade');
+	const dataPath = join(projectPath, '~data/');
+	const dropFilesDir = join(projectPath, '/services/agent/src/upgrade');
 	const distDir = 'dist/services/agent';
 	const dbScriptsDir = 'src/db_scripts';
 
-	const sqlDir = join(pathDir, '/services/agent/sql');
+	const sqlDir = join(projectPath, '/services/agent/sql');
 	const host = 'localhost';
 
 	const dbPrefix = 'halo_';

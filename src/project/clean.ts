@@ -1,15 +1,13 @@
-import { pathExists, readdir } from 'fs-extra-plus';
+import { pathExists } from 'fs-extra-plus';
 import { spawn } from 'p-spawn';
-import { join, resolve } from 'path';
+import { join } from 'path';
+import { getProjectPath, getServicePaths, getTestUIPath } from './utils-path';
 
 export async function cleanBranches(pathDir: string) {
-	if (!pathDir) {
-		pathDir = ".";
-	}
-	pathDir = resolve(pathDir);
+	const projectPath = await getProjectPath(pathDir);
 
 	const excludeBranches = ["dev"];
-	const result = await spawn("git", ["branch"], { cwd: pathDir, capture: "stdout" });
+	const result = await spawn("git", ["branch"], { cwd: projectPath, capture: "stdout" });
 	const branches = `${result.stdout}`.split(/\n/);
 	for (const br of branches) {
 		const branch = br.trim();
@@ -22,7 +20,7 @@ export async function cleanBranches(pathDir: string) {
 				}
 			}
 			if (!ex) {
-				const r = await spawn("git", ["branch", "-D", branch], { cwd: pathDir, capture: "stdout" });
+				const r = await spawn("git", ["branch", "-D", branch], { cwd: projectPath, capture: "stdout" });
 				console.log(r.stdout);
 			}
 		}
@@ -31,34 +29,28 @@ export async function cleanBranches(pathDir: string) {
 
 
 export async function cleanNodeModules(pathDir: string) {
-	if (!pathDir) {
-		pathDir = ".";
-	}
-	pathDir = resolve(pathDir);
+	const projectPath = await getProjectPath(pathDir);
 
-	const projectPath = pathDir;
 	await spawn("rm", ["-rf", join(projectPath, "node_modules")]);
 	await spawn("rm", ["-rf", join(projectPath, "package-lock.json")]);
 
-	const testUIDir = join(projectPath, "test-ui");
+	const testUIDir = await getTestUIPath(projectPath);
 	if (await pathExists(testUIDir)) {
 		await spawn("rm", ["-rf", join(testUIDir, "node_modules")]);
 		await spawn("rm", ["-rf", join(testUIDir, "package-lock.json")]);
 	}
 
-	const servicesPath = join(projectPath, "services");
-	const files = await readdir(servicesPath);
-	for (const dir of files) {
-		let fileOrDir = join(servicesPath, dir, "node_modules");
+	const servicePaths = await getServicePaths(projectPath);
+	for (const servicePath of servicePaths) {
+		let fileOrDir = join(servicePath, "node_modules");
 		await deleteFile(fileOrDir);
 
-		fileOrDir = join(servicesPath, dir, "package-lock.json");
+		fileOrDir = join(servicePath, "package-lock.json");
 		await deleteFile(fileOrDir);
 
-		fileOrDir = join(servicesPath, dir, "dist");
+		fileOrDir = join(servicePath, "dist");
 		await deleteFile(fileOrDir);
 	}
-
 
 }
 
