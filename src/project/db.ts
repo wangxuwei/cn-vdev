@@ -7,8 +7,8 @@ import { getProjectPath } from './utils-path';
 
 
 
-export async function recreateDb(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function recreateDb() {
+	const projectPath = await getProjectPath();
 
 	const dataPath = join(projectPath, '~data/');
 	const dropFilesDir = join(projectPath, '/services/agent/src/upgrade');

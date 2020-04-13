@@ -4,8 +4,8 @@ import { basename } from 'path';
 import { getProjectPath, getServicePaths, getTestUIPath } from './utils-path';
 
 
-export async function updateNpm(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function updateNpm() {
+	const projectPath = await getProjectPath();
 
 	console.log("updating...");
 	await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: projectPath });

@@ -2,11 +2,8 @@ import { pathExists, readdir, readFile, readJSON, writeFile } from 'fs-extra-plu
 import { spawn } from 'p-spawn';
 import { join, resolve } from 'path';
 
-export async function getProjectPath(pathDir: string) {
-	if (!pathDir) {
-		pathDir = ".";
-	}
-	pathDir = resolve(pathDir);
+export async function getProjectPath() {
+	const pathDir = resolve(".");
 	return pathDir;
 }
 

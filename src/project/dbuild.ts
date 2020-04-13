@@ -5,8 +5,8 @@ import { getDockerfileContent, getPackageJsonContent, getProjectPath, getService
 const commentStartTag = "# ms-script";
 const commentEndTag = "# /ms-script";
 
-export async function dbuild(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function dbuild(servicesStr: string) {
+	const projectPath = await getProjectPath();
 
 	const originContents: { [name: string]: string } = {};
 	const servicesPath = await getServicePaths(projectPath);
@@ -29,7 +29,7 @@ export async function dbuild(pathDir: string) {
 		}
 		console.log("Dockerfile updated.");
 		await startServer();
-		await spawn("./node_modules/.bin/vdev", ["dbuild"], { cwd: projectPath });
+		await spawn("./node_modules/.bin/vdev", ["dbuild", servicesStr], { cwd: projectPath });
 
 	} catch (e) {
 		console.log(e);
@@ -48,8 +48,8 @@ export async function dbuild(pathDir: string) {
 	}
 }
 
-export async function revertDbuild(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function revertDbuild() {
+	const projectPath = await getProjectPath();
 	const servicesPath = await getServicePaths(projectPath);
 	// update
 	for (const servicePath of servicesPath) {

@@ -3,8 +3,8 @@ import { spawn } from 'p-spawn';
 import { join } from 'path';
 import { getProjectPath, getServicePaths, getTestUIPath } from './utils-path';
 
-export async function cleanBranches(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function cleanBranches() {
+	const projectPath = await getProjectPath();
 
 	const excludeBranches = ["dev"];
 	const result = await spawn("git", ["branch"], { cwd: projectPath, capture: "stdout" });
@@ -28,8 +28,8 @@ export async function cleanBranches(pathDir: string) {
 }
 
 
-export async function cleanNodeModules(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function cleanNodeModules() {
+	const projectPath = await getProjectPath();
 
 	await spawn("rm", ["-rf", join(projectPath, "node_modules")]);
 	await spawn("rm", ["-rf", join(projectPath, "package-lock.json")]);

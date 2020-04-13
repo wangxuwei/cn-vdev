@@ -2,8 +2,8 @@ import { spawn } from 'p-spawn';
 import { HTTP_BASE_URL, startServer, stopServer } from '../server/main';
 import { getPackageJsonContent, getProjectPath } from './utils-path';
 
-export async function npmInstall(pathDir: string) {
-	const projectPath = await getProjectPath(pathDir);
+export async function npmInstall() {
+	const projectPath = await getProjectPath();
 
 	const packageJson = await getPackageJsonContent(projectPath);
 	try {
