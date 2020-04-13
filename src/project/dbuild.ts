@@ -29,7 +29,11 @@ export async function dbuild(servicesStr: string) {
 		}
 		console.log("Dockerfile updated.");
 		await startServer();
-		await spawn("./node_modules/.bin/vdev", ["dbuild", servicesStr], { cwd: projectPath });
+		const args = ["dbuild"];
+		if (servicesStr) {
+			args.push(servicesStr);
+		}
+		await spawn("./node_modules/.bin/vdev", args, { cwd: projectPath });
 
 	} catch (e) {
 		console.log(e);
