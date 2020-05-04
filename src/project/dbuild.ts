@@ -105,7 +105,9 @@ async function updateAptGetSourceIfNeed(dockerContent: string) {
 	let dockerSteps = dockerContent.split("\n");
 
 	const aptGetStep = dockerSteps.filter((step) => {
-		if (step.indexOf("RUN apt-get ") > -1) {
+		if (step.indexOf("RUN apt-get ") > -1
+			|| dockerContent.indexOf("britesnow/base-agent") > -1
+			|| dockerContent.indexOf("britesnow/base-node") > -1) {
 			return true;
 		}
 		return false;
