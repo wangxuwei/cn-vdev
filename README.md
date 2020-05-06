@@ -15,7 +15,7 @@ n build
 ### Add alias
 
 ```
-alias ms-project="node [path to project]/~out/cmd-project.js"
+alias ms="node [path to project]/~out/cmd-project.js"
 ```
 
 ### RUN scripts
