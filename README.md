@@ -15,12 +15,12 @@ n build
 ### Add alias
 
 ```
-alias ms="node [path to project]/~out/cmd-project.js"
+alias cv="node [path to project]/~out/cmd-project.js"
 ```
 
 ### RUN scripts
 
 ```
-ms-project recreateDb
-ms-project cleanBranches
+cv recreateDb
+cv cleanBranches
 ```
