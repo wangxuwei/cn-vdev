@@ -42,7 +42,7 @@ export async function recreateDb() {
 		const prodFileName = '${basename(file)}';`;
 
 	const origin = await spawn('kubectl', ['exec', '-it', podName, '--', 'cat', `/service/dist/services/agent/src/db.js`], { capture: 'stdout' });
-	await writeFile(join(dataPath, "db.js"), origin.stdout.replace(/const gsFiles(\S|\s)*tmpProdSqlDir\);/g, newLines));
+	await writeFile(join(dataPath, "db.js"), origin.stdout.replace(/const gsFiles(\S|\s)*\/\/\/\/ 4\) Import the prod sql/g, newLines));
 
 	// do copy
 	await spawn('kubectl', ['cp', join(dataPath, "db.js"), `${podName}:/service/dist/services/agent/src/`]);
