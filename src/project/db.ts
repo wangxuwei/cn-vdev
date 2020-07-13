@@ -23,7 +23,7 @@ export async function recreateDb() {
 	})[0];
 
 	// get pod
-	const result = await spawn('kubectl', ['get', 'pods', '-l', 'run=halo-agent', '--no-headers=true', '-o', 'custom-columns=:metadata.name'], { capture: 'stdout' });
+	const result = await spawn('kubectl', ['get', 'pods', '-l', 'run=iva-agent', '--no-headers=true', '-o', 'custom-columns=:metadata.name'], { capture: 'stdout' });
 	const podName = result.stdout.replace("\n", "");
 
 	// ensure
@@ -41,11 +41,11 @@ export async function recreateDb() {
 	const newLines = `    const tmpProdSqlDir = 'tmp/sql/';
 		const prodFileName = '${basename(file)}';`;
 
-	const origin = await spawn('kubectl', ['exec', '-it', podName, '--', 'cat', `/service/dist/services/agent/src/db.js`], { capture: 'stdout' });
-	await writeFile(join(dataPath, "db.js"), origin.stdout.replace(/const gsFiles(\S|\s)*\/\/\/\/ 4\) Import the prod sql/g, newLines));
+	const origin = await spawn('kubectl', ['exec', '-it', podName, '--', 'cat', `/service/dist/services/agent/src/cmd-db.js`], { capture: 'stdout' });
+	await writeFile(join(dataPath, "cmd-db.js"), origin.stdout.replace(/\/\/\/\/ 3\) Download(\S|\s)*\/\/\/\/ 4\) Import the prod sql/g, newLines));
 
 	// do copy
-	await spawn('kubectl', ['cp', join(dataPath, "db.js"), `${podName}:/service/dist/services/agent/src/`]);
+	await spawn('kubectl', ['cp', join(dataPath, "cmd-db.js"), `${podName}:/service/dist/services/agent/src/`]);
 
 	// run
 	await spawn("npm", ["run", "recreateDb"]);
