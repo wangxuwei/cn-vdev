@@ -24,7 +24,7 @@ export async function startServer() {
 		app.listen(HTTP_PORT);
 
 		console.log(`--> web-server - listening at ${HTTP_PORT}`);
-		resolve();
+		resolve(1);
 	});
 }
 
