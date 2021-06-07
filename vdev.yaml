@@ -1,0 +1,5 @@
+system: iva
+
+blocks:
+  - name: src
+    dir: src/
