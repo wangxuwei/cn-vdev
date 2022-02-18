@@ -45,5 +45,5 @@ export async function getPackageJsonContent(pth: string): Promise<any> {
 
 export async function getNpmCachePath(): Promise<any> {
 	const result = await spawn("npm", ["config", "get", "cache"], { capture: "stdout" });
-	return result.stdout.replace("\n", "");
+	return result.stdout!.replace("\n", "");
 }
