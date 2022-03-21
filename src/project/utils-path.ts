@@ -13,8 +13,8 @@ export async function getServicePaths(projectPath: string): Promise<string[]> {
 	return dirs.map((d) => { return join(servicesPath, d) });
 }
 
-export async function getTestUIPath(projectPath: string): Promise<string> {
-	const testUIDir = join(projectPath, "test-ui");
+export async function getTestFolderPath(projectPath: string): Promise<string> {
+	const testUIDir = join(projectPath, "test");
 	return testUIDir;
 }
 

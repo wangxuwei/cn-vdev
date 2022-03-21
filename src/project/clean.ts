@@ -1,7 +1,7 @@
 import { pathExists } from 'fs-extra-plus';
 import { spawn } from 'p-spawn';
 import { join } from 'path';
-import { getProjectPath, getServicePaths, getTestUIPath } from './utils-path';
+import { getProjectPath, getServicePaths, getTestFolderPath } from './utils-path';
 
 export async function cleanBranches() {
 	const projectPath = await getProjectPath();
@@ -34,7 +34,7 @@ export async function cleanNodeModules() {
 	await spawn("rm", ["-rf", join(projectPath, "node_modules")]);
 	await spawn("rm", ["-rf", join(projectPath, "package-lock.json")]);
 
-	const testUIDir = await getTestUIPath(projectPath);
+	const testUIDir = await getTestFolderPath(projectPath);
 	if (await pathExists(testUIDir)) {
 		await spawn("rm", ["-rf", join(testUIDir, "node_modules")]);
 		await spawn("rm", ["-rf", join(testUIDir, "package-lock.json")]);
