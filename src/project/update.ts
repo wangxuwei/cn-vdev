@@ -1,7 +1,7 @@
 import { pathExists, readdir, stat } from 'fs-extra-plus';
 import { spawn } from 'p-spawn';
-import { basename } from 'path';
-import { getProjectPath, getServicePaths, getTestFolderPath } from './utils-path';
+import { basename, join } from 'path';
+import { getProjectPath, getServicePaths, getTestFolderPath, getTestWebUIFolderPath } from './utils-path';
 
 
 export async function updateNpm() {
@@ -10,9 +10,14 @@ export async function updateNpm() {
 	console.log("updating...");
 	await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: projectPath });
 
-	const testUIDir = await getTestFolderPath(projectPath);
-	if (await pathExists(testUIDir)) {
-		await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: testUIDir });
+	const testDir = await getTestFolderPath(projectPath);
+	if (await pathExists(testDir) && await pathExists(join(testDir, "package.json"))) {
+		await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: testDir });
+	}
+
+	const testWebUIDir = await getTestWebUIFolderPath(projectPath);
+	if (await pathExists(testWebUIDir) && await pathExists(join(testWebUIDir, "package.json"))) {
+		await spawn("ncu", ["-u", "--packageFile", "package.json"], { cwd: testWebUIDir });
 	}
 
 	const servicesPath = await getServicePaths(projectPath);

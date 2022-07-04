@@ -18,6 +18,11 @@ export async function getTestFolderPath(projectPath: string): Promise<string> {
 	return testUIDir;
 }
 
+export async function getTestWebUIFolderPath(projectPath: string): Promise<string> {
+	const testUIDir = join(projectPath, "test", "web-ui");
+	return testUIDir;
+}
+
 export async function hasDockerfile(pth: string): Promise<boolean> {
 	const dockerPath = join(pth, "Dockerfile");
 	return await pathExists(dockerPath);
