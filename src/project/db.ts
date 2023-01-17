@@ -40,7 +40,7 @@ export async function recreateDb() {
 		const prodFileName = '${basename(file)}';`;
 
 	const origin = await spawn('kubectl', ['exec', '-it', podName, '--', 'cat', `/service/dist/services/agent/src/cmd-db.js`], { capture: 'stdout' });
-	await writeFile(join(dataPath, "cmd-db.js"), origin.stdout!.replace(/\/\/\/\/ 3\) Download(\S|\s)*\/\/\/\/ 4\) Import the prod sql/g, newLines));
+	await writeFile(join(dataPath, "cmd-db.js"), origin.stdout!.replace(/\/\/\/\/ 1\) Download(\S|\s)*\/\/\/\/ 2\) Drop the halo_ db and user/g, newLines));
 
 	// do copy
 	await spawn('kubectl', ['cp', join(dataPath, "cmd-db.js"), `${podName}:/service/dist/services/agent/src/`]);
