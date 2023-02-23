@@ -9,9 +9,9 @@ export async function recreateDb() {
 	const dataPath = join(__dirname, "../../web-folder/data/");
 	console.log(dataPath);
 
-	const files = await glob('prod-*.*', dataPath);
+	const files = await glob('db-*.dump.gz', dataPath);
 	const file = files.filter(f => {
-		if (f.endsWith(".sql")) {
+		if (f.endsWith(".dump.gz")) {
 			console.log(f);
 			return true;
 		}
@@ -27,23 +27,23 @@ export async function recreateDb() {
 	// ensure
 	try {
 		await spawn('kubectl', ['exec', '-it', podName, '--', 'mkdir', `tmp`]);
-		await spawn('kubectl', ['exec', '-it', podName, '--', 'mkdir', `tmp/sql`]);
 	} catch (e) { }
 
 	console.log("db file: " + file);
 	// do copy
-	await spawn('kubectl', ['cp', file, `${podName}:tmp/sql/`]);
+	await spawn('kubectl', ['cp', file, `${podName}:tmp/`]);
 	console.log("copied done");
 
 	// do replace
-	const newLines = `    const tmpProdSqlDir = 'tmp/sql/';
-		const prodFileName = '${basename(file)}';`;
+	const newLines = `const fileGzName = '${basename(file)}'; 
+		const toLocalFileGz = joinPath("tmp/", fileGzName);
+	`;
 
-	const origin = await spawn('kubectl', ['exec', '-it', podName, '--', 'cat', `/service/dist/services/agent/src/cmd-db.js`], { capture: 'stdout' });
-	await writeFile(join(dataPath, "cmd-db.js"), origin.stdout!.replace(/\/\/\/\/ 1\) Download(\S|\s)*\/\/\/\/ 2\) Drop the halo_ db and user/g, newLines));
+	const origin = await spawn('kubectl', ['exec', '-it', podName, '--', 'cat', `/service/dist/services/agent/src/cmd-db-dev.js`], { capture: 'stdout' });
+	await writeFile(join(dataPath, "cmd-db-dev.js"), origin.stdout!.replace(/\/\/ --- Download latest sanitized db(\S|\s)*\/\/ --- Recreate Sanitized Database/g, newLines));
 
 	// do copy
-	await spawn('kubectl', ['cp', join(dataPath, "cmd-db.js"), `${podName}:/service/dist/services/agent/src/`]);
+	await spawn('kubectl', ['cp', join(dataPath, "cmd-db-dev.js"), `${podName}:/service/dist/services/agent/src/`]);
 
 	// run
 	await spawn("npm", ["run", "recreateDb"]);
