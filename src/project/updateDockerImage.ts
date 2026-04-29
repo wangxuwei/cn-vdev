@@ -102,14 +102,19 @@ async function updateCargoMirrorIfNeed(dockerContent: string) {
 }
 
 async function insertAfterImageStep(dockerSteps: string[], steps: string[]) {
-	let fromSetupIndex = 0;
 	const newSteps = [commentStartTag, ...steps, commentEndTag];
+	const fromIndices: number[] = [];
+	
 	for (let i = 0; i < dockerSteps.length; i++) {
 		const step = dockerSteps[i];
 		if (step.indexOf("FROM ") > -1) {
-			fromSetupIndex = i;
+			fromIndices.push(i);
 		}
 	}
-	dockerSteps.splice(fromSetupIndex + 1, 0, ...newSteps);
+	
+	for (let i = fromIndices.length - 1; i >= 0; i--) {
+		dockerSteps.splice(fromIndices[i] + 1, 0, ...newSteps);
+	}
+	
 	return dockerSteps;
 }
