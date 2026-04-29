@@ -7,8 +7,21 @@ export async function getProjectPath() {
 	return pathDir;
 }
 
+export async function getBlockBaseDir(projectPath: string): Promise<string> {
+	const configPath = join(projectPath, "kdd.yaml");
+	if (await pathExists(configPath)) {
+		const content = await readFile(configPath, "utf-8");
+		const match = content.match(/block_base_dir:\s*(.+)/);
+		if (match && match[1]) {
+			return match[1].trim();
+		}
+	}
+	return "services";
+}
+
 export async function getServicePaths(projectPath: string): Promise<string[]> {
-	const servicesPath = join(projectPath, "services");
+	const blockBaseDir = await getBlockBaseDir(projectPath);
+	const servicesPath = join(projectPath, blockBaseDir);
 	const dirs = await readdir(servicesPath);
 	return dirs.map((d) => { return join(servicesPath, d) });
 }
